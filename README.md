@@ -108,11 +108,13 @@ Route → Controller → Service → Database
 
 | Method | Endpoint                   | Description          |
 | ------ | -------------------------- | -------------------- |
-| POST   | /projects/:projectId/tasks | Create task          |
-| GET    | /projects/:projectId/tasks | Get tasks by project |
-| GET    | /tasks/:taskId             | Get task             |
-| PATCH  | /tasks/:taskId             | Update task          |
-| DELETE | /tasks/:taskId             | Delete task          |
+| POST   | /projects/:projectId/tasks | Create task               |
+| GET    | /projects/:projectId/tasks | Get tasks by project      |
+| GET    | /tasks/:taskId             | Get task                  |
+| PATCH  | /tasks/:taskId             | Update task               |
+| PATCH  | /tasks/:taskId/assign      | Assign task to a user     |
+| PATCH  | /tasks/:taskId/unassign    | Remove current assignee   |
+| DELETE | /tasks/:taskId             | Delete task               |
 
 ---
 

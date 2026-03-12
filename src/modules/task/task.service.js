@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Task = require("./task.model");
 const Project = require("../projects/project.model");
+const User = require("../auth/auth.model");
 
 
 exports.createTask = async (data, userId) => {
@@ -168,4 +169,108 @@ exports.deleteTask = async (taskId, userId) => {
   await Task.findByIdAndDelete(taskId);
 
   return { message: "Task deleted successfully" };
+};
+
+exports.assignTask = async (taskId, assigneeId, userId) => {
+  if (!taskId) {
+    throw new Error("Task ID is required");
+  }
+
+  if (!assigneeId) {
+    throw new Error("Assignee ID is required");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(taskId)) {
+    throw new Error("Invalid task ID");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(assigneeId)) {
+    throw new Error("Invalid assignee ID");
+  }
+
+  const task = await Task.findById(taskId).lean();
+
+  if (!task) {
+    throw new Error("Task not found");
+  }
+
+  const project = await Project.findById(task.project).lean();
+
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  const isRequesterAuthorized =
+    project.owner.toString() === userId ||
+    project.members?.some((member) => member.toString() === userId);
+
+  if (!isRequesterAuthorized) {
+    throw new Error("Not authorized to assign task in this project");
+  }
+
+  const assignee = await User.findById(assigneeId).select("_id").lean();
+
+  if (!assignee) {
+    throw new Error("Assignee user not found");
+  }
+
+  const isAssigneePartOfProject =
+    project.owner.toString() === assigneeId ||
+    project.members?.some((member) => member.toString() === assigneeId);
+
+  if (!isAssigneePartOfProject) {
+    throw new Error("Assignee must be a project owner or member");
+  }
+
+  const updatedTask = await Task.findByIdAndUpdate(
+    taskId,
+    { $set: { assignee: assigneeId } },
+    { new: true, runValidators: true }
+  )
+    .populate("assignee", "name email userName")
+    .populate("project", "title owner members")
+    .lean();
+
+  return updatedTask;
+};
+
+exports.unassignTask = async (taskId, userId) => {
+  if (!taskId) {
+    throw new Error("Task ID is required");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(taskId)) {
+    throw new Error("Invalid task ID");
+  }
+
+  const task = await Task.findById(taskId).lean();
+
+  if (!task) {
+    throw new Error("Task not found");
+  }
+
+  const project = await Project.findById(task.project).lean();
+
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  const isRequesterAuthorized =
+    project.owner.toString() === userId ||
+    project.members?.some((member) => member.toString() === userId);
+
+  if (!isRequesterAuthorized) {
+    throw new Error("Not authorized to unassign task in this project");
+  }
+
+  const updatedTask = await Task.findByIdAndUpdate(
+    taskId,
+    { $set: { assignee: null } },
+    { new: true, runValidators: true }
+  )
+    .populate("assignee", "name email userName")
+    .populate("project", "title owner members")
+    .lean();
+
+  return updatedTask;
 };
