@@ -86,3 +86,30 @@ exports.deleteTask = asyncHandler(async (req, res) => {
   });
 
 });
+
+exports.assignTask = asyncHandler(async (req, res) => {
+  const userId = req.user.sub;
+  const { taskId } = req.params;
+  const { assigneeId } = req.body;
+
+  const updatedTask = await taskService.assignTask(taskId, assigneeId, userId);
+
+  res.status(200).json({
+    success: true,
+    message: "Task assigned successfully",
+    data: updatedTask
+  });
+});
+
+exports.unassignTask = asyncHandler(async (req, res) => {
+  const userId = req.user.sub;
+  const { taskId } = req.params;
+
+  const updatedTask = await taskService.unassignTask(taskId, userId);
+
+  res.status(200).json({
+    success: true,
+    message: "Task unassigned successfully",
+    data: updatedTask
+  });
+});
