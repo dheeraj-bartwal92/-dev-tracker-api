@@ -13,18 +13,18 @@ exports.createTask = asyncHandler(async (req, res) => {
   });
 });
 
-exports.getTaskById = asyncHandler( async (req, res) => {
-    const userId = req.user.sub;
-    const { taskId } = req.params;
+exports.getTaskById = asyncHandler(async (req, res) => {
+  const userId = req.user.sub;
+  const { taskId } = req.params;
 
-    const task = await taskService.getTaskById(taskId, userId)
+  const task = await taskService.getTaskById(taskId, userId);
 
-    res.status(201).json({
+  res.status(200).json({
     success: true,
     message: "Task fetched successfully",
     data: task
   });
-})
+});
 
 exports.getTaskByProjectId = asyncHandler(async (req, res) => {
   const userId = req.user?.sub;
@@ -47,7 +47,6 @@ exports.getTaskByProjectId = asyncHandler(async (req, res) => {
 });
 
 exports.patchTask = asyncHandler(async (req, res) => {
-
   const userId = req.user.sub;
   const { taskId } = req.params;
   const updateData = req.body;
@@ -59,22 +58,16 @@ exports.patchTask = asyncHandler(async (req, res) => {
     });
   }
 
-  const updatedTask = await taskService.patchTask(
-    taskId,
-    userId,
-    updateData
-  );
+  const updatedTask = await taskService.patchTask(taskId, userId, updateData);
 
   res.status(200).json({
     success: true,
     message: "Task updated successfully",
     data: updatedTask
   });
-
 });
 
 exports.deleteTask = asyncHandler(async (req, res) => {
-
   const userId = req.user.sub;
   const { taskId } = req.params;
 
@@ -84,7 +77,6 @@ exports.deleteTask = asyncHandler(async (req, res) => {
     success: true,
     message: "Task deleted successfully"
   });
-
 });
 
 exports.assignTask = asyncHandler(async (req, res) => {
@@ -111,5 +103,58 @@ exports.unassignTask = asyncHandler(async (req, res) => {
     success: true,
     message: "Task unassigned successfully",
     data: updatedTask
+  });
+});
+
+exports.addComment = asyncHandler(async (req, res) => {
+  const userId = req.user.sub;
+  const { taskId } = req.params;
+  const { body } = req.body;
+
+  const comment = await taskService.addComment(taskId, body, userId);
+
+  res.status(201).json({
+    success: true,
+    message: "Comment added successfully",
+    data: comment
+  });
+});
+
+exports.getComments = asyncHandler(async (req, res) => {
+  const userId = req.user.sub;
+  const { taskId } = req.params;
+
+  const comments = await taskService.getComments(taskId, userId);
+
+  res.status(200).json({
+    success: true,
+    count: comments.length,
+    data: comments
+  });
+});
+
+exports.updateComment = asyncHandler(async (req, res) => {
+  const userId = req.user.sub;
+  const { taskId, commentId } = req.params;
+  const { body } = req.body;
+
+  const comment = await taskService.updateComment(taskId, commentId, body, userId);
+
+  res.status(200).json({
+    success: true,
+    message: "Comment updated successfully",
+    data: comment
+  });
+});
+
+exports.deleteComment = asyncHandler(async (req, res) => {
+  const userId = req.user.sub;
+  const { taskId, commentId } = req.params;
+
+  await taskService.deleteComment(taskId, commentId, userId);
+
+  res.status(200).json({
+    success: true,
+    message: "Comment deleted successfully"
   });
 });

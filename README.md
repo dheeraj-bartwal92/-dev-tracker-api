@@ -115,6 +115,10 @@ Route → Controller → Service → Database
 | PATCH  | /tasks/:taskId/assign      | Assign task to a user     |
 | PATCH  | /tasks/:taskId/unassign    | Remove current assignee   |
 | DELETE | /tasks/:taskId             | Delete task               |
+| POST   | /tasks/:taskId/comments    | Add comment to task       |
+| GET    | /tasks/:taskId/comments    | List task comments        |
+| PATCH  | /tasks/:taskId/comments/:commentId | Update own comment |
+| DELETE | /tasks/:taskId/comments/:commentId | Delete own comment |
 
 ---
 
@@ -191,7 +195,6 @@ Response
 
 # 📈 Future Improvements
 
-* Task comments
 * File attachments
 * Activity logs
 * Notifications
