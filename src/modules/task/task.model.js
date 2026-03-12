@@ -59,7 +59,24 @@ const taskSchema = new mongoose.Schema(
 
     dueDate: {
       type: Date
-    }
+    },
+
+    comments: [
+      {
+        body: {
+          type: String,
+          required: [true, "Comment body is required"],
+          trim: true,
+          minlength: [1, "Comment cannot be empty"],
+          maxlength: [2000, "Comment cannot exceed 2000 characters"]
+        },
+        author: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true
+        }
+      }
+    ]
   },
   {
     timestamps: true

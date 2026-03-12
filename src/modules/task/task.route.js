@@ -14,6 +14,12 @@ router.get("/project/:projectId", authMiddleware, taskController.getTaskByProjec
 router.patch("/:taskId/assign", authMiddleware, taskController.assignTask);
 router.patch("/:taskId/unassign", authMiddleware, taskController.unassignTask);
 
+// Task comments
+router.post("/:taskId/comments", authMiddleware, taskController.addComment);
+router.get("/:taskId/comments", authMiddleware, taskController.getComments);
+router.patch("/:taskId/comments/:commentId", authMiddleware, taskController.updateComment);
+router.delete("/:taskId/comments/:commentId", authMiddleware, taskController.deleteComment);
+
 // Get Task By Id
 router.get("/:taskId", authMiddleware, taskController.getTaskById);
 
