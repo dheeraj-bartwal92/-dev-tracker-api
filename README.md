@@ -78,6 +78,8 @@ Route → Controller → Service → Database
 | ------ | -------------- | ------------------ |
 | POST   | /auth/register | Register user      |
 | POST   | /auth/login    | Login user         |
+| POST   | /auth/refresh-token | Refresh access token |
+| POST   | /auth/logout   | Logout user        |
 | GET    | /auth/me       | Get logged in user |
 
 ---
