@@ -1,211 +1,118 @@
-# Task Management API
+# Dev Tracker API
 
-A scalable **RESTful API for project and task management** built with **Node.js, Express, and MongoDB**.
-This API enables teams to collaborate on projects, manage tasks efficiently, and control access through project membership and authorization.
+A REST API for team project and task tracking, built with Node.js, Express, and MongoDB.
 
----
+## Features
 
-## 🚀 Features
+- JWT-based authentication
+- Project CRUD for authenticated users
+- Project member management
+- Task CRUD
+- Task assignment and unassignment
+- Task comments (create, list, update, delete)
+- Layered module structure (routes → controller → service → model)
 
-* 🔐 JWT Authentication
-* 📁 Project Management
-* ✅ Task Management
-* 👥 Project Member Collaboration
-* 🛡 Role-based Authorization
-* 📦 Modular Architecture (Controller → Service → Model)
-* ⚡ Optimized MongoDB queries using Mongoose
-* 🧩 RESTful API design
+## Tech Stack
 
----
+- Node.js
+- Express
+- MongoDB + Mongoose
+- JWT (`jsonwebtoken`)
+- `bcryptjs`
 
-## 🛠 Tech Stack
+## Project Structure
 
-| Technology | Description        |
-| ---------- | ------------------ |
-| Node.js    | JavaScript runtime |
-| Express.js | Backend framework  |
-| MongoDB    | NoSQL database     |
-| Mongoose   | MongoDB ODM        |
-| JWT        | Authentication     |
-
----
-
-## 📁 Project Structure
-
-```
-src
- ├── controllers
- │    ├── authController.js
- │    ├── projectController.js
- │    └── taskController.js
- │
- ├── services
- │    ├── authService.js
- │    ├── projectService.js
- │    └── taskService.js
- │
- ├── models
- │    ├── User.js
- │    ├── Project.js
- │    └── Task.js
- │
- ├── routes
- │    ├── authRoutes.js
- │    ├── projectRoutes.js
- │    └── taskRoutes.js
- │
- ├── middleware
- │    ├── authMiddleware.js
- │    └── errorHandler.js
- │
- └── utils
-      └── asyncHandler.js
+```text
+src/
+  app.js
+  db/db.js
+  middleware/
+    auth.middleware.js
+    error.middleware.js
+  modules/
+    auth/
+    projects/
+    task/
+    activity/
+  utils/
+server.js
 ```
 
-### Architecture
+## API Base URL
 
-```
-Route → Controller → Service → Database
-```
+`/api`
 
----
+## Endpoints
 
-# 📡 API Endpoints
+### Auth
 
-## Authentication
+- `POST /api/auth/register` — Register a user
+- `POST /api/auth/login` — Login and get token
+- `POST /api/auth/logout` — Logout user
 
-| Method | Endpoint       | Description        |
-| ------ | -------------- | ------------------ |
-| POST   | /auth/register | Register user      |
-| POST   | /auth/login    | Login user         |
-| GET    | /auth/me       | Get logged in user |
+### Projects
 
----
+- `POST /api/projects` — Create project
+- `GET /api/projects` — List projects for logged-in user
+- `PUT /api/projects/:projectId` — Update project
+- `DELETE /api/projects/:projectId` — Delete project
+- `POST /api/projects/:projectId/members` — Add a project member
+- `GET /api/projects/:projectId/members` — List project members
+- `DELETE /api/projects/:projectId/members/:userId` — Remove member
 
-## Projects
+### Tasks
 
-| Method | Endpoint             | Description         |
-| ------ | -------------------- | ------------------- |
-| POST   | /projects            | Create project      |
-| GET    | /projects            | Get all projects    |
-| GET    | /projects/:projectId | Get project details |
-| PATCH  | /projects/:projectId | Update project      |
-| DELETE | /projects/:projectId | Delete project      |
+- `POST /api/tasks` — Create task
+- `GET /api/tasks/project/:projectId` — Get tasks by project
+- `GET /api/tasks/:taskId` — Get task by id
+- `PATCH /api/tasks/:taskId` — Update task
+- `DELETE /api/tasks/:taskId` — Delete task
+- `PATCH /api/tasks/:taskId/assign` — Assign task
+- `PATCH /api/tasks/:taskId/unassign` — Unassign task
+- `POST /api/tasks/:taskId/comments` — Add task comment
+- `GET /api/tasks/:taskId/comments` — List task comments
+- `PATCH /api/tasks/:taskId/comments/:commentId` — Update own comment
+- `DELETE /api/tasks/:taskId/comments/:commentId` — Delete own comment
 
----
+## Setup
 
-## Project Members
+### 1) Install dependencies
 
-| Method | Endpoint                             | Description         |
-| ------ | ------------------------------------ | ------------------- |
-| POST   | /projects/:projectId/members         | Add project member  |
-| GET    | /projects/:projectId/members         | Get project members |
-| DELETE | /projects/:projectId/members/:userId | Remove member       |
-
----
-
-## Tasks
-
-| Method | Endpoint                   | Description          |
-| ------ | -------------------------- | -------------------- |
-| POST   | /projects/:projectId/tasks | Create task               |
-| GET    | /projects/:projectId/tasks | Get tasks by project      |
-| GET    | /tasks/:taskId             | Get task                  |
-| PATCH  | /tasks/:taskId             | Update task               |
-| PATCH  | /tasks/:taskId/assign      | Assign task to a user     |
-| PATCH  | /tasks/:taskId/unassign    | Remove current assignee   |
-| DELETE | /tasks/:taskId             | Delete task               |
-| POST   | /tasks/:taskId/comments    | Add comment to task       |
-| GET    | /tasks/:taskId/comments    | List task comments        |
-| PATCH  | /tasks/:taskId/comments/:commentId | Update own comment |
-| DELETE | /tasks/:taskId/comments/:commentId | Delete own comment |
-
----
-
-# ⚙️ Installation
-
-### Clone the repository
-
-```
-git clone https://github.com/your-username/task-management-api.git
-cd task-management-api
-```
-
-### Install dependencies
-
-```
+```bash
 npm install
 ```
 
-### Configure environment variables
+### 2) Configure environment variables
 
-Create a `.env` file:
+Create a `.env` file in the project root:
 
-```
+```env
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 ```
 
-### Run the server
+### 3) Run the app
 
-```
+Development mode:
+
+```bash
 npm run dev
 ```
 
-Server runs at:
+Production mode:
 
+```bash
+npm start
 ```
+
+Server default URL:
+
+```text
 http://localhost:5000
 ```
 
----
+## Notes
 
-# 📬 Example API Response
-
-```
-GET /projects/:projectId/tasks
-```
-
-Response
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "title": "Setup backend",
-      "status": "todo"
-    }
-  ]
-}
-```
-
----
-
-# 🔒 Authorization Logic
-
-| Role           | Permissions  |
-| -------------- | ------------ |
-| Project Owner  | Full access  |
-| Project Member | Manage tasks |
-| Guest          | Read-only    |
-
----
-
-# 📈 Future Improvements
-
-* File attachments
-* Activity logs
-* Notifications
-* WebSocket real-time updates
-* API rate limiting
-* Swagger documentation
-
----
-
-# 👨‍💻 Author
-
-**Dheeraj Singh**
-
-Backend Developer
+- The API requires a valid JWT for all project and task routes.
+- Include the token in the `Authorization` header as `Bearer <token>`.
