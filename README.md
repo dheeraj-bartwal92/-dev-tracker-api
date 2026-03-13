@@ -193,7 +193,7 @@ Response
 
 ---
 
-# 📈 Upcoming Improvements
+# 📈 Future Improvements
 
 * File attachments for tasks and projects
 * In-app + email notifications
