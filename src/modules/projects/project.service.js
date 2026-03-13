@@ -1,4 +1,5 @@
 const Project = require("./project.model");
+const { logActivity } = require("../../utils/activityLogger");
 
 exports.createProject = async (data, userId) => {
   const { title, description } = data || {};
@@ -22,6 +23,15 @@ if (existing) {
     description: description?.trim(),
     owner: userId,
     members: [userId] // owner automatically becomes member
+  });
+
+  await logActivity({
+    projectId: project._id,
+    userId,
+    action: "PROJECT_CREATED",
+    metadata: {
+      title: project.title
+    }
   });
 
   return project;
@@ -66,9 +76,19 @@ exports.updateProject = async (projectId, data, userId) => {
         runValidators: true
     })
 
-    if (!project) {
+  if (!project) {
     throw new Error("Project not found or not authorized");
   }
+
+  await logActivity({
+    projectId,
+    userId,
+    action: "PROJECT_UPDATED",
+    metadata: {
+      title,
+      description
+    }
+  });
 
   return project;
 }
@@ -81,9 +101,18 @@ exports.addMember = async (projectId, userId, memberId) => {
         new: true
     })
 
-    if (!project) {
+  if (!project) {
     throw new Error("Project not found or not authorized");
   }
+
+  await logActivity({
+    projectId,
+    userId,
+    action: "MEMBER_ADDED",
+    metadata: {
+      memberId
+    }
+  });
 
   return project;
   
@@ -101,9 +130,18 @@ exports.removeMember = async (projectId, userId, memberId) => {
         new: true
     })
 
-    if (!project) {
+  if (!project) {
     throw new Error("Project not found or not authorized");
   }
+
+  await logActivity({
+    projectId,
+    userId,
+    action: "MEMBER_REMOVED",
+    metadata: {
+      memberId
+    }
+  });
 
   return project;
 }

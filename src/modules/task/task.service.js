@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Task = require("./task.model");
 const Project = require("../projects/project.model");
 const User = require("../auth/auth.model");
+const { logActivity } = require("../../utils/activityLogger");
 
 const validateObjectId = (value, fieldName) => {
   if (!value) {
@@ -84,6 +85,17 @@ exports.createTask = async (data, userId) => {
     status
   });
 
+  await logActivity({
+    projectId: task.project,
+    taskId: task._id,
+    userId,
+    action: "TASK_CREATED",
+    metadata: {
+      title: task.title,
+      status: task.status
+    }
+  });
+
   return task;
 };
 
@@ -147,6 +159,29 @@ exports.patchTask = async (taskId, userId, updateData) => {
     runValidators: true
   }).lean();
 
+  if (Object.prototype.hasOwnProperty.call(updateData || {}, "status")) {
+    await logActivity({
+      projectId: updatedTask.project,
+      taskId: updatedTask._id,
+      userId,
+      action: "TASK_STATUS_UPDATED",
+      metadata: {
+        previousStatus: task.status,
+        newStatus: updatedTask.status
+      }
+    });
+  }
+
+  await logActivity({
+    projectId: updatedTask.project,
+    taskId: updatedTask._id,
+    userId,
+    action: "TASK_UPDATED",
+    metadata: {
+      updatedFields: Object.keys(updateData || {})
+    }
+  });
+
   return updatedTask;
 };
 
@@ -162,6 +197,16 @@ exports.deleteTask = async (taskId, userId) => {
   await ensureProjectAccess(task.project, userId);
 
   await Task.findByIdAndDelete(taskId);
+
+  await logActivity({
+    projectId: task.project,
+    taskId: task._id,
+    userId,
+    action: "TASK_DELETED",
+    metadata: {
+      title: task.title
+    }
+  });
 
   return { message: "Task deleted successfully" };
 };
