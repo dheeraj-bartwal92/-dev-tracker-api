@@ -193,14 +193,14 @@ Response
 
 ---
 
-# 📈 Future Improvements
+# 📈 Upcoming Improvements
 
-* File attachments
-* Activity logs
-* Notifications
+* File attachments for tasks and projects
+* In-app + email notifications
 * WebSocket real-time updates
-* API rate limiting
-* Swagger documentation
+* API rate limiting and request throttling
+* Swagger/OpenAPI documentation
+* Advanced filtering and sorting for tasks
 
 ---
 
